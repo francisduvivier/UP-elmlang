@@ -1,0 +1,138 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"></head><body><h1 id="comparative-programming-languages">Comparative Programming Languages</h1>
+<h1 id="project-assignment-functional-reactive-programming-elm">Project Assignment Functional Reactive Programming (Elm)</h1>
+<p>For this assignment, you are required to implement a version of the Asteroids game in Elm.</p>
+<p>An example implementation can be found on <a href="http://people.cs.kuleuven.be/dominique.devriese/Elm/Asteroids.html">this page</a>.
+ Your solution should mimic the behaviour of this implementation. If 
+something is not clear in this assignment, you can consider the example 
+implementation as part of the instructions.</p>
+<h2 id="expected-working-time">Expected working time</h2>
+<p>We expect you to spend max. 20 hours on this assignment. You are 
+allowed to turn in an incomplete assignment. If you do, try to implement
+ features that are explained early on in the assignment first. If you 
+are quickly ready, there are some optional extra assignments you can 
+make.</p>
+<h2 id="debug-output">Debug output</h2>
+<p>We recommend you use a debugging text element to make information available for debugging, as demonstrated in the Elm demo.</p>
+<p>You can do this with code like the following:</p>
+<pre><code>    game : Signal Element
+    game = ...  -- The actual game Element
+
+    -- debugInfo : Signal ...
+    debugInfo = ... -- Whatever info you want to show for debugging
+
+    debugEl : Signal Element
+    debugEl = lift asText debugInfo
+
+    -- FULL GUI
+    main : Signal Element
+    main = lift2 above game debugEl</code></pre>
+<h2 id="features">Features</h2>
+<p>We require you to implement the following features.</p>
+<ul>
+<li><p>The playing field.</p>
+<p>There is a playing field of 500x500 pixels, with a black background color.</p></li>
+<li><p>Game play</p>
+<p>Initially, a new game is started by pressing space. If the player 
+wins or loses, the field disappears and the text "Won" or "Lost" is 
+shown until the player presses space to start the next game etc.</p>
+<p>The game must run using a fixed heartbeat of 20 Hz, meaning that user
+ input is read roughly 20 times per second and objects move forward at 
+their current speed 20 times per second.</p></li>
+<li><p>Space ship</p>
+<p>The player controls a little space ship flying around in the playing field.</p>
+<ul>
+<li><p>Drawing</p>
+<p>To draw the space ship at a certain position <code>(x,y)</code> and orientation <code>dir</code>, you are required to use the following code. This will draw the space ship as an arrow in that direction.</p>
+<pre><code>    showPlane : (Float, Float) -&gt; Float -&gt; Form
+    showPlane pos orientation =
+      move pos (rotate orientation  
+        (filled white (polygon [(10,0),(-8,-5),(-4,0),(-8,5)])))</code></pre></li>
+<li><p>Steering</p>
+<p>The space ship has a certain position, speed and orientation. Without
+ user input, it retains its previous speed and orientation. The user 
+controls the ship using the arrows. Pressing Up/Down increases/decreases
+ the speed slightly, pressing Left/Right makes the ship turn about its 
+axis.</p></li>
+<li><p>Playing field edges</p>
+<p>If the space ship hits the edge of the playing field, it bounces back. This means that if its orientation was previously <code>dir</code> and it hits a vertical edge (the right or left edge of the field), its new orientation becomes <code>pi - dir</code>. If it hits a horizontal edge (the upper or lower edge), then the new orientation becomes <code>-dir</code>. It must not be possible for the ship to leave the playing field.</p></li>
+</ul></li>
+<li><p>Asteroids</p>
+<p>Asteroids fly around in the playing field. These have a fixed speed 
+and bounce against the edges in the same way as the space ship. 
+Different asteroids can have different diameters.</p>
+<ul>
+<li><p>Drawing:</p>
+<p>You are required to draw the asteroids with the following code:</p>
+<pre><code>    showAsteroid : (Float, Float) -&gt; Float -&gt; Form
+    showAsteroid pos diam = move pos (filled white (ngon 5 diam))</code></pre></li>
+<li><p>Collisions</p>
+<p>If the space ship collides with an asteroid, the game is lost. To 
+determine if a collision takes place, you can treat the asteroids as if 
+they were circle-shaped. For collision detection, the space ship can be 
+treated as an 8-pixel radius circular object.</p>
+<p>Asteroides cannot collide with each other. They just "fly through each other".</p></li>
+<li><p>At the start</p>
+<p>At the start of a game, at least five asteroids appear with different
+ size, position, speed and orientation. These initial values may be 
+chosen fixed and hardcoded in the program source.</p></li>
+<li><p>Adding asteroids</p>
+<p>It should be easy to change the source code to add additional 
+asteroids or change their initial parameters. This must be possible by 
+changing only the initial state of the game and none of the other code.</p></li>
+</ul></li>
+<li><p>Bullets</p>
+<ul>
+<li><p>Firing bullets</p>
+<p>The player can fire bullets by pressing the space bar. When he does 
+so, a bullet appears whose orientation is the same as that of the space 
+ship, speed is 4 pixels/time-unit larger than that of the space ship. 
+Their initial position should be at the space ship's front tip.</p>
+<p>One bullet can be fired per time-unit.</p></li>
+<li><p>Drawing bullets</p>
+<p>You should draw bullets as circles with a diameter of 1 pixel.</p></li>
+<li><p>At the field's edge</p>
+<p>If a bullet reaches the field's edge, it disappears. You must make 
+sure that when they do, their data is not still being kept and updated 
+in the game's internal memory.</p></li>
+<li><p>Bullet hitting an asteroid</p>
+<p>When a bullet hits an asteroid, <em>both</em> the bullet and the 
+asteroid disappear from the game. Here too, you are allowed to treat 
+asteroids as circular objects for collision detection.</p>
+<p>Bullets cannot hit other bullets or the space ship, they just "fly through each other".</p></li>
+<li><p>Winning the game</p>
+<p>The player wins the game when all asteroids are destroyed.</p></li>
+</ul></li>
+<li><p>Optional extra features</p>
+<p>If you have extra time, you can implement some extra features. These are not implemented in the example assignment.</p>
+<ul>
+<li><p>Change the way bullets are fired, so that only one bullet can be 
+fired per second while other user input is still processed and objects 
+still move at 20Hz.</p></li>
+<li><p>Use Elm's Random package to choose a (pseudo-)random number of asteroids, with random initial speeds, orientations etc.</p></li>
+<li><p>Make asteroids bounce against each other as well. Figure out how their orientations should change after such a bounce.</p></li>
+<li><p>Make the game more interesting by adding levels of increasing 
+difficulty or by recording and showing the current playing time and 
+keeping the quickest winner per level as a high-score etc.</p></li>
+</ul></li>
+</ul>
+<h2 id="practically">Practically</h2>
+<p>You can implement and test your implementation using the online editor that we make available at <a href="http://193.190.168.58:8000/try">this location</a>. We ask that you do not use the one on elm-lang.org to spare the Elm team's server resources.</p>
+<p>We emphasize strongly that <strong><em>THE ONLINE EDITOR WILL NOT SAVE YOUR CODE</em></strong>. Therefore: while making this assignment, remember to <strong><em>SAVE YOUR CODE OFTEN</em></strong>
+ in a safe location. You can do this for example by selecting all your 
+code in the editor, copy/pasting it into a normal editor and saving to a
+ suitable file.</p>
+<h2 id="documentation">Documentation</h2>
+<p>Here are some links with documentation material for Elm:</p>
+<ul>
+<li><p><a href="http://193.190.168.58:8000/Documentation.elm">Documentation for the Elm standard library</a>.</p></li>
+<li><p><a href="http://193.190.168.58:8000/learn/Syntax.elm">A document containing an overview of Elm syntax</a>.</p></li>
+<li><p><a href="http://193.190.168.58:8000/Examples.elm">Elm examples ranging from basic to advanced</a>.</p></li>
+</ul>
+<h2 id="turning-in-the-assignment">Turning in the assignment</h2>
+<p>You have to turn in your solution for this assignment as a single 
+.elm file containing your full solution through Toledo. Please make sure
+ that the file compiles and runs before submitting. The deadline is 
+Sunday December, 22nd at 23h59.</p>
+<p>If you have any questions, you can contact the assistant at the following e-mail address: dominique.devriese@cs.kuleuven.be.</p>
+</body></html>
